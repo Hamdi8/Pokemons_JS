@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Pokemons</title>
+	<link rel="shortcut icon" type="image/png" href="Images/ball.png"/>
+  <meta charset="utf-8"/>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head> 
+<body>
+	<div id="app">
+		<v-app>
+			<v-container fluid fill-height class="d-flex flex-column align-stretch ma-0 pa-0" >
+				<v-layout column wrap justify-start class="ma-0 pa-0">
+					<v-dialog v-model="overlay" width="1000" class="ma-0 pa-0">
+						<v-layout column wrap justify-center align-center fill-height class="ma-0 pa-0">
+							<v-card v-if="overlay" class="col-12 grey darken-4 white--text">
+								<v-card-text class="col-12">
+									<v-layout row justify-center align-start class="ma-0 pa-0">
+										<v-img :src="'images/' +pokemons[selected].image" class="col-4 grey darken-3" min-height=450></v-img>
+										<v-layout column class="col-7 white--text">
+												<div class="text-h3 mb-4"> {{ pokemons[selected].nom }} </div>
+												<div class="text-h5 mb-2">Description :</div>
+												<div class="text-body-1"> {{ pokemons[selected].description }} </div>
+										</v-loayout>
+										
+									</v-layout>
+								</v-card-text>
+								<v-card-actions>
+									<v-btn @click="overlay=false">Fermer</v-btn> 
+								</v-card-actions>
+							</v-card>
+						</v-layout>
+					</v-dialog>
+					<v-app-bar absolute
+					color="#43a047"
+					dark
+					shrink-on-scroll
+					prominent
+					src="images/pokemon1.png"
+					fade-img-on-scroll
+					scroll-target="#scrolling-techniques-5"
+					scroll-threshold="500"
+					 max-height="100" >
+					 <template v-slot:img="{ props }">
+						<v-img
+						  v-bind="props"
+						  gradient="to top right, rgba(55,236,186,.7), rgba(25,32,72,.7)"
+						></v-img>
+					  </template>
+						    
+						<v-toolbar-title >
+							<v-container fill-height>
+								<v-layout row wrap justify-center align-center>
+									<div class="mr-10">Pokemon</div>
+									
+									<v-select v-on:change="getSelection" dark class="mt-5" label="Catégorie"dense outlined v-model="categorie" :items="categories" item-text="label" item-value="clef"></v-select>
+									
+									<v-autocomplete
+        								v-model="model"
+										:items="items"
+										:loading="isLoading"
+										:search-input.sync="search"
+										chips
+										clearable
+										hide-details
+										hide-selected
+										item-text="name"
+										item-value="symbol"
+										label="nom de Pokemon ..."
+										placeholder="écrivez le nom"
+										solo
+									></v-autocomplete>      
+								</v-layout>
+							</v-container>
+						</v-toolbar-title>
+						
+					</v-app-bar>
+		
+						<v-layout v-if="categorie!='all'" row wrap align-center justify-center class="grey darken-1 white--text flex-grow-1">
+							<v-hover v-for="(pokemon,index) in pokemons" :key="index" v-slot="{ hover }">
+								<v-card @click="afficher(index)" :elevation="hover ? 24 : 6" :class="hover?'grey darken-2 white--text col-xl-2 col-lg-2 col-md-3 col-sm-6 ma-2':'grey darken-4 white--text col-xl-2 col-lg-2 col-md-3 col-sm-6 ma-2'" >
+									<v-img
+									  height="250"
+									  class="grey darken-3"
+									  :src="'images/' +pokemon.image">
+									></v-img>
+									<v-card-title class="col-12 align-center justify-center" nowrap><div style="white-space: nowrap ; overflow: hidden ; text-overflow: ellipsis;">{{ pokemon.nom }}</div></v-card-title>
+								</v-card>
+							</v-hover>
+						</v-layout>
+	
+					
+						<v-layout v-else row wrap align-center justify-center class="grey darken-1 white--text flex-grow-1">
+							<v-hover v-for="(pokemon, index) in pokemons" :key="index" v-slot="{ hover }">
+								<v-card @click="afficher(index)" :elevation="hover ? 24 : 6" :class="hover?'grey darken-2 white--text col-xl-2 col-lg-2 col-md-3 col-sm-6 ma-2':'grey darken-4 white--text col-xl-2 col-lg-2 col-md-3 col-sm-6 ma-2'" >
+									<v-img
+									  height="250"
+									  class="grey darken-3"
+									  :src="'images/' +pokemon.image">
+									></v-img>
+									<v-card-title class="col-12 align-center justify-center" nowrap><div style="white-space: nowrap ; overflow: hidden ; text-overflow: ellipsis;">{{ pokemon.nom }}</div></v-card-title>
+								</v-card>
+							</v-hover>
+						
+					</v-layout>
+					<v-footer dark padless class="pa-0" max-height="150">
+						<v-row>
+								<v-card flat tile class="grey darken-4 tile white--text text-center col-12">
+								  <v-card-text>
+									<v-btn v-for="icon in icons" :key="icon" class="mx-4 white--text" icon>
+									  <v-icon size="24px">
+										{{ icon.icon }}
+									  </v-icon>
+									</v-btn>
+								  </v-card-text>
+								  <v-divider></v-divider>
+								  <v-card-text class="white--text">
+									{{ new Date().getFullYear() }} — <strong>Pokemons</strong>
+								  </v-card-text>
+								</v-card>
+						</v-row>
+					</v-footer>
+				</v-layout>
+	  		</v-container>
+    	</v-app>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script>
+	
+  
+  
+  
+	new Vue({
+    	el: '#app',
+      	vuetify: new Vuetify(),
+      	data:{
+      		pokemons:[],
+      		selected:0,
+      		categorie:'all',
+      		categories:[{label:"Toutes", clef:'all'}],
+      		categorieChoisie:true,
+      		overlay:false
+      	},
+      	created:function(){
+      		this.getCategories();
+      		this.getSelection();
+      	},
+      	methods:{
+      		afficher:function(index){
+      			this.selected = index;
+      			this.pokemons[this.selected].recherche = this.pokemons[this.selected].nom;
+      			
+      			this.overlay = true;
+      		},
+      		getCategories:function(){
+      			var self = this;
+      			axios.get("categories").then(function(reponse){
+      					console.log(self);
+						self.categories = reponse.data;
+						self.categories.unshift({label:"Toutes", clef:'all'});
+				});
+      		},
+			getSelection:function(){
+				var self = this;
+				axios.get("pokemonsParCat/"+this.categorie).then(function(reponse){
+						console.log(reponse);
+						if (reponse.data.statut=='OK'){
+							self.pokemons = reponse.data.pokemons;
+							console.log("Chargement de "+self.pokemons.length+" pokemons");
+						}
+						else{
+							console.log("Erreur de chargement de "+self.categorie);
+						}
+				});
+			}
+			
+		},
+    })
+  </script>
+</body>
+</html>
+
